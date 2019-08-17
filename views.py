@@ -2,10 +2,17 @@
 API method implementations live here
 """
 
-from utils.views import BaseView
+from core.views import View
+
+__all__ = [
+    'UploadView',
+    'UpdateView',
+    'SearchView',
+    'TokenView',
+]
 
 
-class UploadView(BaseView):
+class UploadView(View):
     method = 'images.upload'
     limiting = ['10 / min', '1000 / day']  # TODO: Think aboud'it
     schema = {  # TODO: Add more constraints, move schema to settings?
@@ -18,7 +25,7 @@ class UploadView(BaseView):
     }
 
 
-class UpdateView(BaseView):
+class UpdateView(View):
     method = 'images.update'
     limiting = ['100 / sec']  # TODO: Default 'just-dont-ddos' will do?
     schema = {
@@ -32,7 +39,7 @@ class UpdateView(BaseView):
     }
 
 
-class SearchView(BaseView):
+class SearchView(View):
     method = 'images.search'
     limiting = 'just-dont-ddos'
     schema = {
@@ -42,7 +49,7 @@ class SearchView(BaseView):
     }
 
 
-class TokenView(BaseView):
+class TokenView(View):
     service = True
     schema = {
         'rid': {'type': 'string', 'required': True}
