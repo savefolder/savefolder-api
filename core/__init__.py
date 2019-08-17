@@ -1,3 +1,3 @@
 """
-Utility stuff lives here
+Mini-framework stuff lives here
 """

@@ -1,3 +1,0 @@
-"""
-ORM models live here
-"""
