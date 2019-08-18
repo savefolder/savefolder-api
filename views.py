@@ -50,7 +50,12 @@ class SearchView(View):
 
 
 class TokenView(View):
+    method = 'tokens.acquire'
     service = True
     schema = {
-        'rid': {'type': 'string', 'required': True}
+        'rid': {
+            'required': True,
+            'type': 'string',
+            'coerce': str,
+        }
     }

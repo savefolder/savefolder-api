@@ -13,7 +13,7 @@ class APIError(Exception):
         self.status = status
         self.response = {
             'status': status,
-            'message': message,
+            'error': message,
         }
 
 
@@ -37,20 +37,20 @@ class View:
             view = cls(data)
             await view.authenticate()
             await view.validate()
-            await view.process()
+            return await view.process()
         except APIError as exc:
             return exc.response
         except Exception as exc:
             print('Internal error:', exc)  # TODO: Logging
-            return {'status': 500, 'message': 'Internal error'}
+            return {'status': 500, 'error': 'Internal error'}
 
     async def authenticate(self):
         if 'token' not in self.data:
-            raise APIError('No API token provided', 403)
-        token = str(self.data['token'])
+            raise APIError('Token required', 403)
+        token = str(self.data.pop('token'))
         try:
             # TODO: Move to separate class
-            data = jwt.decode(token, SECRET, algorithms=['RS256'])
+            data = jwt.decode(token, SECRET, algorithms=['HS256'])
             self.token = data
         except jwt.ExpiredSignatureError:
             raise APIError('Token expired', 403)
@@ -60,3 +60,13 @@ class View:
         if self.token.get('uid') and self.service:
             raise APIError('Access denied', 403)
         # TODO: RPS limiting
+
+    async def validate(self):
+        self.data = self.validator.validated(self.data)
+        if self.data is None:
+            message = str(self.validator.errors)  # TODO
+            raise APIError('Validation error: ' + message, 400)
+
+    async def process(self):
+        # Should be overridden
+        return {'status': 418, 'error': 'Nothing to do'}
