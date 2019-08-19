@@ -48,7 +48,7 @@ class Router:
             response = APIError('Bad request', 400).response
             return self.encode(response)
         method = path.replace('/', '.').strip('.')
-        method = method or data.get('method')
+        method = method or data.pop('method', '')
         if not method or method not in self.views:
             # TODO: Logging
             response = APIError('Unknown method', 404).response

@@ -44,6 +44,7 @@ class View:
 
     def __init_subclass__(cls):
         cls.validator = Validator(cls.schema)
+        cls.validator.allow_unknown = True
         # TODO: Build limiter
 
     @classmethod
