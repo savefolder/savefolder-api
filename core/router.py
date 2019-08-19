@@ -3,7 +3,7 @@ Custom mini-router
 """
 
 from sanic.response import HTTPResponse
-from core.views import View
+from core.views import View, APIError
 import json
 
 
@@ -45,10 +45,14 @@ class Router:
         # TODO: Allow `method` in data
         method = path.replace('/', '.').strip('.')
         if method not in self.views:
-            return self.encode({'status': 404, 'error': 'Unknown method'})
+            # TODO: Logging
+            response = APIError('Unknown method', 404).response
+            return self.encode(response)
         data = self.decode(request)
         if data is None:
-            return self.encode({'status': 400, 'error': 'Bad request'})
+            # TODO: Logging
+            response = APIError('Bad request', 400).response
+            return self.encode(response)
         view = self.views[method]
         response = await view.handle(data)
         return self.encode(response)

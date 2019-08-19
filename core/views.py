@@ -8,13 +8,28 @@ import jwt
 
 
 class APIError(Exception):
-    def __init__(self, message, status):
+    """
+    Custom exception representing API error
+    """
+
+    def __init__(self, message, status=500):
         super().__init__(message)
+        self.message = message
         self.status = status
         self.response = {
             'status': status,
             'error': message,
         }
+
+    def __repr__(self):
+        base = super().__repr__()
+        status = 'status=%s' % self.status
+        return base[:-1] + ', ' + status + ')'
+
+    def __str__(self):
+        base = super().__str__()
+        status = '[%s] ' % self.status
+        return status + base
 
 
 class View:
@@ -42,7 +57,7 @@ class View:
             return exc.response
         except Exception as exc:
             print('Internal error:', exc)  # TODO: Logging
-            return {'status': 500, 'error': 'Internal error'}
+            return APIError('Internal error', 500).response
 
     async def authenticate(self):
         if 'token' not in self.data:
@@ -68,5 +83,4 @@ class View:
             raise APIError('Validation error: ' + message, 400)
 
     async def process(self):
-        # Should be overridden
-        return {'status': 418, 'error': 'Nothing to do'}
+        raise APIError('Nothing to do', 418)
