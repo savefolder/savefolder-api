@@ -12,18 +12,18 @@ class Router:
     Custom mini-router, supporting:
     + Registering package of views
     + Request decoding & encoding
+    + URL prefix (may be useful for versioning)
     - Multiple decoding & encoding options
-    - URL prefix (may be useful for versioning)
+    - IP-based BadRPS limiting
     """
 
-    def __init__(self, app):
+    METHODS = ['GET', 'POST']
+
+    def __init__(self, app, prefix=''):
         self.app = app
         self.views = {}
-        self.app.add_route(
-            self.handle,
-            '/<path:path>',   # Wildcard path (prefix?)
-            ['GET', 'POST'],  # Allow GET & POST only (any?)
-        )
+        self.app.add_route(self.handle, prefix + '/', self.METHODS)
+        self.app.add_route(self.handle, prefix + '/<path:path>', self.METHODS)
 
     def register(self, package):
         """
@@ -42,16 +42,16 @@ class Router:
         """
         HTTP request entry point
         """
-        # TODO: Allow `method` in data
-        method = path.replace('/', '.').strip('.')
-        if method not in self.views:
-            # TODO: Logging
-            response = APIError('Unknown method', 404).response
-            return self.encode(response)
         data = self.decode(request)
         if data is None:
             # TODO: Logging
             response = APIError('Bad request', 400).response
+            return self.encode(response)
+        method = path.replace('/', '.').strip('.')
+        method = method or data.get('method')
+        if not method or method not in self.views:
+            # TODO: Logging
+            response = APIError('Unknown method', 404).response
             return self.encode(response)
         view = self.views[method]
         response = await view.handle(data)
