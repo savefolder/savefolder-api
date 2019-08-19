@@ -3,8 +3,7 @@ Custom CBV implementation
 """
 
 from cerberus import Validator
-from settings import SECRET
-import jwt
+from .token import Token
 
 
 class APIError(Exception):
@@ -64,16 +63,13 @@ class View:
         if 'token' not in self.data:
             raise APIError('Token required', 403)
         token = str(self.data.pop('token'))
-        try:
-            # TODO: Move to separate class
-            data = jwt.decode(token, SECRET, algorithms=['HS256'])
-            self.token = data
-        except jwt.ExpiredSignatureError:
-            raise APIError('Token expired', 403)
-        except jwt.InvalidTokenError:
+        self.token = Token(token)
+        if not self.token.valid:
             # TODO: Bad token RPS+IP limiting
             raise APIError('Invalid token', 403)
-        if self.token.get('uid') and self.service:
+        if self.token.expired:
+            raise APIError('Token expired', 403)
+        if self.service and not self.token.type & Token.SERVICE:
             raise APIError('Access denied', 403)
         # TODO: RPS limiting
 
