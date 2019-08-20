@@ -1,0 +1,7 @@
+auth:
+  alg: 'HS512'
+  key: 'test_key'
+
+merge:
+  duration: 300
+  key_range: [10000, 99999]

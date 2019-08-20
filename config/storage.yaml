@@ -1,0 +1,5 @@
+service_name: 's3'
+endpoint_url: 'https://storage.yandexcloud.net'
+aws_access_key_id: 'cB5TYtlsEg1TA6A2p25L'
+aws_secret_access_key: 'iT7P8n6LnH9rvBKuKo0Suy3YEZXKSQgI19enGV_D'
+bucket: 'savefolder-test'
