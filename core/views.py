@@ -34,7 +34,7 @@ class APIError(Exception):
 class View:
     method = 'abstract'
     limiting = ['100 / sec']
-    service = False
+    access = 'USER'
     schema = {}
 
     def __init__(self, data):
@@ -69,7 +69,7 @@ class View:
             raise APIError('Invalid token', 403)
         if self.token.expired:
             raise APIError('Token expired', 403)
-        if self.service and not self.token.type & Token.SERVICE:
+        if not self.token.check(self.access):
             raise APIError('Access denied', 403)
         # TODO: RPS limiting
 
