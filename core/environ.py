@@ -1,16 +1,32 @@
-"""
-Miscellaneous utils
-"""
-
+import urllib.parse as urlparse
 from envparse import Env
+import json as pyjson
 import warnings
 import os
+
+
+def shortcut(cast):
+    # Fix: `default` kwarg is always second argument
+    # So you can do `env.whatever('KEY', 'DEFAULT')`
+    def method(self, var, default=None, **kwargs):
+        return self.__call__(var, cast=cast, default=default, **kwargs)
+    return method
 
 
 class Environ(Env):
     """
     Thin envparse wrapper
     """
+
+    # Improved shortcuts
+    bool = shortcut(bool)
+    dict = shortcut(dict)
+    float = shortcut(float)
+    int = shortcut(int)
+    list = shortcut(list)
+    str = shortcut(str)
+    json = shortcut(pyjson.loads)
+    url = shortcut(urlparse.urlparse)
 
     def read_envfile(self, path=None, **overrides):
         # Temporarily proxy `setdefault` to `setitem`

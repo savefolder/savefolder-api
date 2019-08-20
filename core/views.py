@@ -76,8 +76,10 @@ class View:
     async def validate(self):
         self.data = self.validator.validated(self.data)
         if self.data is None:
-            message = str(self.validator.errors)  # TODO
-            raise APIError('Validation error: ' + message, 400)
+            error = APIError('Validation error', 400)
+            # TODO: Standardize?
+            error.response['details'] = self.validator.errors
+            raise error
 
     async def process(self):
         raise APIError('Nothing to do', 418)
