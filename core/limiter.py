@@ -42,10 +42,11 @@ class Limiter:
         period = self.PERIODS[match.group(3)]
         return limit, number * period
 
-    async def hit(self, key):
+    async def hit(self, key, update=True):
         key = 'limiter:' + self.prefix + ':' + str(key)
         for limit, seconds in self.limits:
-            x = await self.redis.incr(key)
-            if x == 1: await self.redis.expire(key, seconds)
+            if update: x = await self.redis.incr(key)
+            else: x = await self.redis.get(key) or 0
+            if update and x == 1: await self.redis.expire(key, seconds)
             elif x > limit: return False
         return True

@@ -41,7 +41,7 @@ class UpdateView(View):
 
 class SearchView(View):
     method = 'images.search'
-    limiting = 'just-dont-ddos'
+    limiting = ['100 / min']
     schema = {
         'query': {'type': 'string'},
         'id': {'type': 'string'},

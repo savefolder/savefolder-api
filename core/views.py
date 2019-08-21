@@ -3,6 +3,7 @@ Custom CBV implementation
 """
 
 from cerberus import Validator
+from .limiter import Limiter
 from .token import Token
 
 
@@ -44,7 +45,8 @@ class View:
     def __init_subclass__(cls):
         cls.validator = Validator(cls.schema)
         cls.validator.allow_unknown = True
-        # TODO: Build limiter
+        prefix = 'method:' + cls.method
+        cls.limiter = Limiter(*cls.limiting, prefix=prefix)
 
     @classmethod
     async def handle(cls, data):
@@ -65,13 +67,15 @@ class View:
         token = str(self.data.pop('token'))
         self.token = Token(token)
         if not self.token.valid:
-            # TODO: Bad token RPS+IP limiting
             raise APIError('Invalid token', 403)
         if self.token.expired:
             raise APIError('Token expired', 403)
         if not self.token.check(self.access):
             raise APIError('Access denied', 403)
-        # TODO: RPS limiting
+        if self.token.is_user() and not await self.limiter.hit(self.token.uid):
+            raise APIError('Too many requests', 429)
+        if self.token.is_service() and not await self.limiter.hit(self.token.sid):
+            raise APIError('Too many service requests', 420)
 
     async def validate(self):
         self.data = self.validator.validated(self.data)

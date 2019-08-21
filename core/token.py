@@ -38,6 +38,15 @@ class Token:
         ))
         return 'Token(%s)' % args
 
+    def is_user(self):
+        return self.access == self.USER
+
+    def is_service(self):
+        return self.access == self.SERVICE
+
+    def is_admin(self):
+        return self.access == self.ADMIN
+
     def __str__(self):
         return self.string
 
