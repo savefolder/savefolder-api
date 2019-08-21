@@ -1,3 +1,7 @@
+"""
+Dynamically imported settings
+"""
+
 from .environ import env
 import importlib
 
@@ -7,5 +11,5 @@ settings = importlib.import_module(module).__dict__
 
 def __getattr__(name):
     if name not in settings:
-        raise KeyError('Unknown setting: %s' % name)
+        raise KeyError('Unknown settings variable: %s' % name)
     return settings[name]

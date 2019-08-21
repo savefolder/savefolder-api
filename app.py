@@ -4,7 +4,7 @@ from sanic import Sanic
 import views
 
 app = Sanic()  # TODO: Custom wrapper
-router = Router(app)
+router = Router(app, prefix='v0')
 router.register(views)
 
 if __name__ == '__main__':
