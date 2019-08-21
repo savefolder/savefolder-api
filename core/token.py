@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import settings  # TODO: FIX ???
+from . import settings
 import jwt
 
 
