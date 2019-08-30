@@ -17,9 +17,9 @@ class Limiter:
         'hour': 60 * 60,
         'day': 24 * 60 * 60,
     }
-    PATTERN = re.compile('(\d+)\s*(?:per|/)\s*(\d+)?\s*(%s)' % '|'.join(PERIODS))
+    PATTERN = re.compile(r'(\d+)\s*(?:per|/)\s*(\d+)?\s*(%s)' % '|'.join(PERIODS))
 
-    def __init__(self, *limits, prefix='', redis: aioredis.Redis=None):
+    def __init__(self, *limits, prefix='', redis=None):
         self.prefix = str(prefix)
         self.limits = [self.parse(i) for i in limits]
         self.limits.sort(key=lambda x: x[1])

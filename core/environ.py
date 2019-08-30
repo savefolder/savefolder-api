@@ -40,5 +40,6 @@ class Environ(Env):
         os.environ.setdefault = setdefault
 
 
+# Convenient global var
 env = Environ()
 env.read_envfile()

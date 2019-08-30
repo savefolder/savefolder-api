@@ -14,8 +14,8 @@ class Router:
     + Registering package of views
     + Request decoding & encoding
     + URL prefix (may be useful for versioning)
+    + IP-based BadRPS limiting
     - Multiple decoding & encoding options
-    - IP-based BadRPS limiting
     """
 
     METHODS = ['GET', 'POST']
@@ -45,21 +45,25 @@ class Router:
         """
         HTTP request entry point
         """
+        # Check if request ip behaved badly recently
         ip = request.remote_addr
         if ip and not await self.limiter.hit(ip, update=False):
             response = APIError('You got bamboozled', 503).response
             return self.encode(response)
+        # Extract payload
         data = self.decode(request)
         if data is None:
             await self.limiter.hit(ip)
             response = APIError('Bad request', 400).response
             return self.encode(response)
+        # Extract and validate target method
         method = path.replace('/', '.').strip('.')
         method = method or data.pop('method', '')
         if not method or method not in self.views:
             await self.limiter.hit(ip)
             response = APIError('Unknown method', 404).response
             return self.encode(response)
+        # Handle & encode
         view = self.views[method]
         response = await view.handle(data)
         if response['status'] == 403:

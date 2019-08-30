@@ -64,8 +64,7 @@ class View:
     async def authenticate(self):
         if 'token' not in self.data:
             raise APIError('Token required', 403)
-        token = str(self.data.pop('token'))
-        self.token = Token(token)
+        self.token = Token(str(self.data.pop('token')))
         if not self.token.valid:
             raise APIError('Invalid token', 403)
         if self.token.expired:
