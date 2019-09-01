@@ -19,6 +19,9 @@ class Limiter:
     }
     PATTERN = re.compile(r'(\d+)\s*(?:per|/)\s*(\d+)?\s*(%s)' % '|'.join(PERIODS))
 
+    # Initialized in `get_redis`
+    default_redis = None
+
     def __init__(self, *limits, prefix='', redis=None):
         self.prefix = str(prefix)
         self.limits = [self.parse(i) for i in limits]
@@ -27,7 +30,7 @@ class Limiter:
 
     @classmethod
     def get_redis(cls):
-        if not hasattr(cls, 'default_redis'):
+        if cls.default_redis is None:
             loop = asyncio.get_event_loop()
             future = aioredis.create_redis(settings.REDIS_URL)
             redis = loop.run_until_complete(future)
