@@ -1,6 +1,7 @@
 from core.router import Router
 from core import settings
 from sanic import Sanic
+import models
 import views
 
 app = Sanic()  # TODO: Custom wrapper
