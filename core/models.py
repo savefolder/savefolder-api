@@ -1,6 +1,6 @@
 from umongo import Instance, Document, fields, validate
 from motor.motor_asyncio import AsyncIOMotorClient
-from . import settings
+from .settings import settings
 
 
 class Model(Document):

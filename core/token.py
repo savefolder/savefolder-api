@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from . import settings
+from .settings import settings
 import jwt
 
 

@@ -2,14 +2,10 @@
 Dynamically imported settings
 """
 
+from easydict import EasyDict
 from .environ import env
 import importlib
 
 module = env.str('SETTINGS', 'settings').rstrip('.py')
-settings = importlib.import_module(module).__dict__
-
-
-def __getattr__(name):
-    if name not in settings:
-        raise KeyError('Unknown settings variable: %s' % name)
-    return settings[name]
+settings = importlib.import_module(module)
+settings = EasyDict(settings.__dict__)
