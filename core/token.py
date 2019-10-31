@@ -9,7 +9,9 @@ class Token:
     """
 
     ALGORITHM = 'HS256'
-    DEFAULT_EXPIRE = timedelta(hours=24)
+    DEFAULT_EXPIRE = timedelta(
+        seconds=settings.TOKEN_EXPIRE
+    )
     USER, SERVICE, ADMIN = range(3)
     ACCESS = {
         'USER': USER,
