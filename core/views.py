@@ -35,7 +35,7 @@ class APIError(Exception):
 class View:
     method = 'abstract'
     limiting = ['100 / sec']
-    access = 'USER'
+    access = Token.USER
     schema = {}
 
     def __init__(self, data):
@@ -54,7 +54,9 @@ class View:
             view = cls(data)
             await view.authenticate()
             await view.validate()
-            return await view.process()
+            data = await view.process()
+            if type(data) == dict: return data
+            return {'data': data}
         except APIError as exc:
             return exc.response
         except Exception as exc:

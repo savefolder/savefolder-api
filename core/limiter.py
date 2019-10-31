@@ -49,7 +49,7 @@ class Limiter:
         key = 'limiter:' + self.prefix + ':' + str(key)
         for limit, seconds in self.limits:
             if update: x = await self.redis.incr(key)
-            else: x = await self.redis.get(key) or 0
+            else: x = int(await self.redis.get(key) or 0)
             if update and x == 1: await self.redis.expire(key, seconds)
             elif x > limit: return False
         return True

@@ -66,7 +66,7 @@ class Router:
         # Handle & encode
         view = self.views[method]
         response = await view.handle(data)
-        if response['status'] == 403:
+        if response.get('status') == 403:
             # Not sure about that
             await self.limiter.hit(ip)
         return self.encode(response)
@@ -74,10 +74,13 @@ class Router:
     def decode(self, request):
         """
         Decodes http request as python dict
-        (for now, only json is supported)
+        Supported encodings: json & query params
         """
+        content = request.content_type
         try:
-            return request.json
+            if content == 'application/json': return request.json
+            elif request.args: return request.args
+            else: return {}
         except:
             return None
 
