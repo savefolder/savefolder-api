@@ -1,14 +1,18 @@
 from core.models import Model, fields
 
-
-class User(Model):
-    # Just an ID placeholder for now
-    pass
+__all__ = [
+    'Service',
+    'User',
+    'Image',
+]
 
 
 class Service(Model):
-    # Just ad ID placeholder for now
-    pass
+    name = fields.StringField()
+
+
+class User(Model):
+    service = fields.ReferenceField(Service)
 
 
 class Image(Model):
