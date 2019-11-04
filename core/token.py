@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from .settings import settings
+from calendar import timegm
 import jwt
 
 
@@ -54,21 +55,22 @@ class Token:
 
     def validate(self):
         try:
+            self.valid = True
             data = jwt.decode(
                 jwt=self.string,
                 key=settings.SECRET,
+                options={'verify_exp': False},
                 algorithms=[self.ALGORITHM],
             )
-        except jwt.ExpiredSignatureError:
-            self.valid = True
-            self.expired = True
-            return
         except jwt.InvalidTokenError:
             self.valid = False
             return
 
-        self.valid = True
         self.expired = False
+        if 'exp' in data:
+            now = timegm(datetime.utcnow().utctimetuple())
+            self.expired = int(data['exp']) < now
+
         self.uid = data.get('uid')
         self.sid = data.get('sid')
         self.access = data.get('acc')
@@ -81,6 +83,7 @@ class Token:
     @classmethod
     def create(cls, uid=None, sid=None, access=None, expire=None, **data):
         if expire is None: expire = cls.DEFAULT_EXPIRE
+        if type(expire) == int: expire = timedelta(seconds=expire)
         if access is None: access = cls.USER if uid else cls.SERVICE
         if type(access) == str: access = cls.ACCESS[access.upper()]
 

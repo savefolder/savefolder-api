@@ -33,8 +33,12 @@ class APIError(Exception):
 
 
 class View:
+    """
+    Base class for all API methods
+    """
+
     method = 'abstract'
-    limiting = ['100 / sec']
+    limiting = []
     access = Token.USER
     schema = {}
 
@@ -64,19 +68,27 @@ class View:
             return APIError('Internal error', 500).response
 
     async def authenticate(self):
+        if self.access is None: return await self.check_limiting()
+        await self.check_token(allow_expired=False, check_access=True)
+        key = ''
+        if self.token.is_user(): key = self.token.uid
+        elif self.token.is_service(): key = self.token.sid
+        await self.check_limiting(key=key)
+
+    async def check_limiting(self, key=''):
+        if not await self.limiter.hit(key):
+            raise APIError('Too many requests', 420)
+
+    async def check_token(self, allow_expired=False, check_access=True):
         if 'token' not in self.data:
             raise APIError('Token required', 403)
         self.token = Token(str(self.data.pop('token')))
         if not self.token.valid:
             raise APIError('Invalid token', 403)
-        if self.token.expired:
+        if not allow_expired and self.token.expired:
             raise APIError('Token expired', 403)
-        if not self.token.check(self.access):
+        if check_access and not self.token.check(self.access):
             raise APIError('Access denied', 403)
-        if self.token.is_user() and not await self.limiter.hit(self.token.uid):
-            raise APIError('Too many requests', 429)
-        if self.token.is_service() and not await self.limiter.hit(self.token.sid):
-            raise APIError('Too many service requests', 420)
 
     async def validate(self):
         self.data = self.validator.validated(self.data)

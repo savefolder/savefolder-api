@@ -9,12 +9,15 @@ __all__ = [
 
 @register
 class Service(Model):
+    token = fields.StringField()
     name = fields.StringField()
 
 
 @register
 class User(Model):
+    token = fields.StringField()
     service = fields.ReferenceField(Service)
+    rid = fields.StringField()
 
 
 @register

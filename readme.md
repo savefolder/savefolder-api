@@ -87,6 +87,16 @@ Status code is also accessible as HTTP response status
 - `created: bool` &ndash; whether if new account was created
 
 
+### Method: `tokens.refresh`
+
+**Input:** 
+
+- `token: str` &ndash; expired api token
+
+**Output:**
+
+- `token: str` &ndash; freshly generated api token
+
 ### Method: `search`
 
 **Input:**
