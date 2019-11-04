@@ -4,6 +4,7 @@ Custom mini-router
 
 from aiohttp.web import json_response
 from .views import View, APIError
+from easydict import EasyDict
 from .limiter import Limiter
 
 
@@ -66,6 +67,7 @@ class Router:
 
         # Handle & encode
         view = self.views[method]
+        data = EasyDict(data)
         response = await view.handle(data)
         if response.get('status') == 403:
             # Not sure about that
@@ -82,8 +84,7 @@ class Router:
             if content == 'application/json':
                 return await request.json()
             elif content == 'application/octet-stream':
-                query = dict(request.query.items())
-                return query
+                return dict(request.query.items())
             else:
                 return {}
         except:

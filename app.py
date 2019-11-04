@@ -1,15 +1,22 @@
 from core.settings import settings
 from core.router import Router
 from aiohttp import web
-import asyncio
 import views
 
-app = web.Application()  # TODO: Custom wrapper
-loop = asyncio.get_event_loop()
+app = web.Application()
 router = Router(app, prefix='v0')
 router.register(views)
 
+
+async def status(_):
+    return web.json_response({
+        'status': 200,
+        'ok': True,
+    })
+
+
 if __name__ == '__main__':
+    app.router.add_route('*', '/', status)
     web.run_app(
         app,
         host=settings.HOST,

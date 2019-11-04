@@ -60,7 +60,7 @@ class Token:
                 algorithms=[self.ALGORITHM],
             )
         except jwt.ExpiredSignatureError:
-            self.valid = False
+            self.valid = True
             self.expired = True
             return
         except jwt.InvalidTokenError:
@@ -81,15 +81,15 @@ class Token:
     @classmethod
     def create(cls, uid=None, sid=None, access=None, expire=None, **data):
         if expire is None: expire = cls.DEFAULT_EXPIRE
-        if access is None: access = cls.USER
+        if access is None: access = cls.USER if uid else cls.SERVICE
         if type(access) == str: access = cls.ACCESS[access.upper()]
 
         if access == cls.USER and uid is None: raise KeyError('uid is required for user token')
         if access == cls.USER and sid is None: raise KeyError('sid is required for user token')
         if access == cls.SERVICE and sid is None: raise KeyError('sid is required for service token')
 
-        if uid is not None: data['uid'] = uid
-        if sid is not None: data['sid'] = sid
+        if uid is not None: data['uid'] = str(uid)
+        if sid is not None: data['sid'] = str(sid)
         data['exp'] = datetime.utcnow() + expire
         data['acc'] = access
         token = jwt.encode(
