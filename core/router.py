@@ -31,11 +31,11 @@ class Router:
         Registers package containing view classes
         Package must declare __all__ variable
         """
-        exports = package.__dict__['__all__']
-        for key in exports:
-            cls = package[key]
-            if issubclass(cls, View) and cls.method:
-                self.views[cls.method] = cls
+        package = package.__dict__
+        for key, value in package.items():
+            if type(value) != type: continue
+            if issubclass(value, View) and value.method:
+                self.views[value.method] = value
 
     async def handle(self, request):
         """

@@ -5,6 +5,7 @@ Custom CBV implementation
 from cerberus import Validator
 from .limiter import Limiter
 from .token import Token
+import validators
 import traceback
 
 __all__ = [
@@ -12,6 +13,20 @@ __all__ = [
     'Token',
     'View',
 ]
+
+
+class ExtendedValidator(Validator):
+    """
+    Extended Cerberus validator
+    """
+
+    def _validate_url(self, enabled, field, value):
+        """
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if enabled and not validators.url(value, public=True):
+            self._error(field, 'Not a valid URL')
 
 
 class APIError(Exception):
@@ -54,7 +69,7 @@ class View:
         self.token = None
 
     def __init_subclass__(cls):
-        cls.validator = Validator(cls.schema)
+        cls.validator = ExtendedValidator(cls.schema)
         cls.validator.allow_unknown = True
         prefix = 'method:' + cls.method
         cls.limiter = Limiter(*cls.limiting, prefix=prefix)

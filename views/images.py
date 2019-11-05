@@ -6,7 +6,7 @@ class UploadImageView(View):
     access = Token.USER
     limiting = ['500 / day']
     schema = {
-        'url': {'type': 'url', 'required': True},
+        'url': {'type': 'string', 'required': True, 'url': True},
         'rid': {'type': 'string'},
         'tags': {'type': 'string'},
     }
@@ -15,7 +15,7 @@ class UploadImageView(View):
         pass
 
 
-class BaseImageReferenceView(View):
+class BaseImageView(View):
     method = 'images.test'
     access = Token.USER
     schema = {
@@ -25,9 +25,9 @@ class BaseImageReferenceView(View):
 
     async def validate(self):
         await super().validate()
-        if 'id' not in self.data and 'rid' not in self.data:
+        if not self.data.get('id') and not self.data.get('rid'):
             error = APIError('Validation error', 400)
-            message = 'Either \'id\' or \'rid\' field must be provided'
+            message = {'*': ['Either \'id\' or \'rid\' field must be provided']}
             error.response['details'] = message
             raise error
 
@@ -35,24 +35,17 @@ class BaseImageReferenceView(View):
         pass
 
 
-class UpdateImageView(View):
+class UpdateImageView(BaseImageView):
     method = 'images.update'
-    access = Token.USER
     schema = {
+        **BaseImageView.schema,
         'tags': {'type': 'string'},
     }
 
 
 class GetImageView(View):
     method = 'images.get'
-    access = Token.USER
-    schema = {
-        'url': {'type': 'url', 'required': True},
-        'rid': {'type': 'string'},
-        'tags': {'type': 'string'},
-    }
 
 
 class DeleteImageView(View):
     method = 'images.delete'
-    access = Token.USER
