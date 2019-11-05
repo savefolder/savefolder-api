@@ -1,0 +1,15 @@
+version: '3'
+services:
+    mongo:
+        image: mongo
+    redis:
+        image: redis
+    web:
+        build:
+            dockerfile: docker/Dockerfile
+            context: ../
+        links:
+            - mongo
+            - redis
+        ports:
+            - "80"
