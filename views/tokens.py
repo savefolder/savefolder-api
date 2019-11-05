@@ -1,10 +1,9 @@
-from core.views import View, APIError
-from core.token import Token
 from bson import ObjectId
+from core.views import *
 from models import *
 
 
-class TokensAcquireView(View):
+class AcquireTokenView(View):
     method = 'tokens.acquire'
     access = Token.SERVICE
     schema = {
@@ -21,12 +20,11 @@ class TokensAcquireView(View):
         user = User(service=service, rid=self.data.rid)
         await user.commit()
         user.token = Token.create(uid=user.id, sid=service.id).string
-        print(user.token)
         await user.commit()
         return {'token': user.token, 'created': True}
 
 
-class TokensRefreshView(View):
+class RefreshTokenView(View):
     method = 'tokens.refresh'
     access = None
     schema = {}

@@ -3,8 +3,14 @@ API method implementations live in this package
 """
 
 from .tokens import *
+from .images import *
 
 __all__ = [
-    'TokensAcquireView',
-    'TokensRefreshView',
+    'AcquireTokenView',
+    'RefreshTokenView',
+    'UploadImageView',
+    'UpdateImageView',
+    'GetImageView',
+    'DeleteImageView',
+
 ]

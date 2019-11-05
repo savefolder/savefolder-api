@@ -5,6 +5,13 @@ Custom CBV implementation
 from cerberus import Validator
 from .limiter import Limiter
 from .token import Token
+import traceback
+
+__all__ = [
+    'APIError',
+    'Token',
+    'View',
+]
 
 
 class APIError(Exception):
@@ -38,8 +45,8 @@ class View:
     """
 
     method = 'abstract'
-    limiting = []
     access = Token.USER
+    limiting = []
     schema = {}
 
     def __init__(self, data):
@@ -63,16 +70,19 @@ class View:
             return {'data': data}
         except APIError as exc:
             return exc.response
-        except Exception as exc:
-            print('Internal error:', exc)  # TODO: Logging
+        except Exception as err:
+            print('Internal error:', type(err))
+            traceback.print_exc()  # TODO: Sentry integration
             return APIError('Internal error', 500).response
 
     async def authenticate(self):
         if self.access is None: return await self.check_limiting()
         await self.check_token(allow_expired=False, check_access=True)
         key = ''
-        if self.token.is_user(): key = self.token.uid
-        elif self.token.is_service(): key = self.token.sid
+        if self.token.is_user():
+            key = self.token.uid
+        elif self.token.is_service():
+            key = self.token.sid
         await self.check_limiting(key=key)
 
     async def check_limiting(self, key=''):
