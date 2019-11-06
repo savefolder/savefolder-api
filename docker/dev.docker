@@ -1,0 +1,10 @@
+FROM python:latest
+WORKDIR /app
+VOLUME /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+RUN pip install gunicorn
+
+EXPOSE 8080
+CMD ["python", "-u", "app.py"]

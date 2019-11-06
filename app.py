@@ -15,10 +15,12 @@ async def status(_):
     })
 
 
+app.router.add_get('/', status)
+
 if __name__ == '__main__':
-    app.router.add_route('*', '/', status)
     web.run_app(
         app,
-        host=settings.HOST,
-        port=settings.PORT,
+        # host=settings.HOST,
+        # port=settings.PORT,
+        port=8080,
     )

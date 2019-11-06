@@ -7,7 +7,7 @@ class UploadImageView(View):
     limiting = ['500 / day']
     schema = {
         'url': {'type': 'string', 'required': True, 'url': True},
-        'rid': {'type': 'string'},
+        'rid': {'type': 'string', 'required': True},
         'tags': {'type': 'string'},
     }
 
