@@ -20,7 +20,6 @@ app.router.add_get('/', status)
 if __name__ == '__main__':
     web.run_app(
         app,
-        # host=settings.HOST,
-        # port=settings.PORT,
-        port=8080,
+        host=settings.HOST,
+        port=settings.PORT,
     )

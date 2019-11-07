@@ -8,8 +8,5 @@ services:
         build:
             dockerfile: docker/pro.docker
             context: ..
-        links:
-            - mongo
-            - redis
         ports:
-            - "8080"
+            - "80:80"

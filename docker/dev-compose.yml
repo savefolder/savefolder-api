@@ -8,10 +8,7 @@ services:
         build:
             dockerfile: docker/dev.docker
             context: ..
-        links:
-            - mongo
-            - redis
         ports:
-            - "8080:8080"
+            - "80:80"
         volumes:
             - "..:/app"

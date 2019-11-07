@@ -2,7 +2,7 @@
 
 FROM alpine:latest as bootstrap
 LABEL stage=bootstrap
-WORKDIR /tmp
+WORKDIR /app
 
 COPY . .
 RUN apk update && apk add --update git
@@ -13,8 +13,8 @@ RUN mkdir files && tar xf files.tar -C files
 
 FROM python:latest
 WORKDIR /app
+EXPOSE 80
 
-COPY --from=bootstrap /tmp/. .
+COPY --from=bootstrap /app/files/. .
 RUN pip install -r requirements.txt
-
 CMD ["python", "-u", "app.py"]
