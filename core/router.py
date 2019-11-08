@@ -22,6 +22,7 @@ class Router:
 
     def __init__(self, app, prefix=''):
         self.app = app
+        self.prefix = prefix
         self.views = {}
         self.limiter = Limiter(*self.BAD_REQUESTS_LIMIT, prefix='bad-requests')
         self.app.router.add_route('*', f'/{prefix}/{{path:.*}}', self.handle)
@@ -36,6 +37,18 @@ class Router:
             if type(value) != type: continue
             if issubclass(value, View) and value.method:
                 self.views[value.method] = value
+
+    def route(self, methods='*', path=''):
+        """
+        Classic route register decorator
+        TODO: Move to custom app wrapper
+        """
+
+        def deco(handler):
+            self.app.router.add_route(methods, path, handler)
+            return handler
+
+        return deco
 
     async def handle(self, request):
         """

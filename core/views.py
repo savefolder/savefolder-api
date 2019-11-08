@@ -60,7 +60,7 @@ class View:
     """
 
     method = 'abstract'
-    access = Token.USER
+    access = None
     limiting = []
     schema = {}
 
