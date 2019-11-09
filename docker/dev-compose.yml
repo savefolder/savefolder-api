@@ -8,6 +8,9 @@ services:
         build:
             dockerfile: docker/dev.docker
             context: ..
+        depends_on:
+            - mongo
+            - redis
         ports:
             - "80:80"
         volumes:
