@@ -1,0 +1,15 @@
+version: "3"
+services:
+    mongo:
+        image: mongo:latest
+    redis:
+        image: redis:latest
+    tests:
+        build:
+            dockerfile: docker/test.docker
+            context: ..
+        depends_on:
+            - mongo
+            - redis
+        volumes:
+            - "..:/app"

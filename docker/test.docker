@@ -1,0 +1,9 @@
+FROM python:latest
+WORKDIR /app
+EXPOSE 80
+
+RUN mkdir tests
+COPY requirements.txt .
+COPY tests/requirements.txt tests
+RUN pip install -r tests/requirements.txt
+CMD ["python", "-m", "pytest", "tests"]
