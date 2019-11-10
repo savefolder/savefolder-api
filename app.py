@@ -8,7 +8,8 @@ router = Router(app)
 router.register(views)
 
 
-@router.route(path='/')
+# TODO: FIX LATER
+@router.route(path='/status')
 async def status(_):
     return web.json_response({
         'status': 200,

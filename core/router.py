@@ -22,10 +22,11 @@ class Router:
 
     def __init__(self, app, prefix=''):
         self.app = app
-        self.prefix = prefix
+        self.prefix = prefix.strip('/')
+        if self.prefix: self.prefix += '/'
         self.views = {}
         self.limiter = Limiter(*self.BAD_REQUESTS_LIMIT, prefix='bad-requests')
-        self.app.router.add_route('*', f'/{prefix}/{{path:.*}}', self.handle)
+        self.app.router.add_route('*', f'/{self.prefix}{{path:.*}}', self.handle)
 
     def register(self, package):
         """
