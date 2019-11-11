@@ -1,30 +1,19 @@
+from bson import ObjectId
 from core.views import *
-
-
-class UploadImageView(View):
-    method = 'images.upload'
-    access = Token.USER
-    limiting = ['500 / day']
-    schema = {
-        'url': {'type': 'string', 'required': True, 'url': True},
-        'rid': {'type': 'string', 'required': True},
-        'tags': {'type': 'string'},
-    }
-
-    async def process(self):
-        pass
+from models import *
 
 
 class BaseImageView(View):
     method = 'images.test'
     access = Token.USER
     schema = {
-        'id': {'type': 'string'},
+        'id': {'type': 'string', 'coerce': ObjectId},
         'rid': {'type': 'string'},
     }
 
     async def validate(self):
         await super().validate()
+        print('>>>', self.data)
         if not self.data.get('id') and not self.data.get('rid'):
             error = APIError('Validation error', 400)
             message = {'*': ['Either \'id\' or \'rid\' field must be provided']}
@@ -32,7 +21,10 @@ class BaseImageView(View):
             raise error
 
     async def get_image(self):
-        pass
+        if self.data.get('id'):
+            return await Image.find_one({'id': self.data['id']})
+        if self.data.get('rid'):
+            return await Image.find_one({'rid': self.data['rid']})
 
 
 class UpdateImageView(BaseImageView):
